@@ -46,6 +46,21 @@ export default Server(
             res.json(response);
         });
 
+        app.post('/hello-world', async (req, res) => {
+            try {
+                ic.setOutgoingHttpOptions({
+                    maxResponseBytes: 20_000n,
+                    cycles: 500_000_000_000n, // HTTP outcalls cost cycles. Unused cycles are returned.
+                    transformMethodName: 'transform'
+                });
+
+                const fetchData = await (await fetch(`https://doa-doa-api-ahmadramadhan.fly.dev/api/1`)).json();
+                res.json(fetchData);
+            } catch (error) {
+                res.json({'error': true, data: {}, code: 500, message: error});
+            }
+        });
+
         app.use(express.static('/dist'));
         return app.listen();
     },
